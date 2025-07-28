@@ -9,7 +9,8 @@ const trackerData = new mongoose.Schema({
     clickTime: {
         type: String,
         default: () => new Date().toISOString().split('T')[0]
-    }
+    },
+    adhesion: Number
 });
 
 export default mongoose.model('IQ', trackerData);
