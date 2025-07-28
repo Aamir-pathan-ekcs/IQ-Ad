@@ -6,7 +6,10 @@ const trackerData = new mongoose.Schema({
     orderID: String,
     lineItemID: String,
     creativeID:  String,
-    clickTime: String
+    clickTime: {
+        type: String,
+        default: () => new Date().toISOString().split('T')[0]
+    }
 });
 
 export default mongoose.model('IQ', trackerData);
