@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const trackerData = new mongoose.Schema({
     loopCount: Number,
-    advertiserId: String,
-    orderId: String,
-    lineItemId: String,
-    creativeId:  String,
+    advertiserID: String,
+    orderID: String,
+    lineItemID: String,
+    creativeID:  String,
     clickTime: String
 });
 

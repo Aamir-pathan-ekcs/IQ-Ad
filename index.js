@@ -16,6 +16,7 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 app.post('/track', async (req, res)=>{
     try{
         const data = req.body;
+
         const trackerData = new tracker(data);
         await trackerData.save();
         res.status(201).send({ success: true, message: 'Data saved' });
