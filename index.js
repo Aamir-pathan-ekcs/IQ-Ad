@@ -16,6 +16,17 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 app.post('/track', async (req, res)=>{
     try{
         const data = req.body;
+
+        if(data.video_db) {
+            const transformData = {
+                firstQuarter: typeof data.video_db["first-quarter"] === 'number' ? data.video_db["first-quarter"] : 0,
+                secondQuarter: typeof data.video_db["second-quarter"] === 'number' ? data.video_db["second-quarter"] : 0,
+                thirdQuarter: typeof data.video_db["third-quarter"] === 'number' ? data.video_db["third-quarter"] : 0,
+                fourthQuarter: typeof data.video_db["fourth-quarter"] === 'number' ? data.video_db["fourth-quarter"] : 0
+            }
+            data.video_db = transformData;
+        }
+
         const {advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, 
                video_db, ...restFields} = data;
         const existingDoc = await tracker.findOne({advertiserID, orderID, lineItemID, creativeID});
