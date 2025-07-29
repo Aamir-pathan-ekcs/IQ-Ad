@@ -31,8 +31,8 @@ app.post('/track', async (req, res)=>{
                video_db, ...restFields} = data;
         const existingDoc = await tracker.findOne({advertiserID, orderID, lineItemID, creativeID});
         if(existingDoc) {
-            const expandData = typeof data['adhesion'] === 'number' ? data['adhesion'] : 0;
-            existingDoc.expand = (existingDoc.expand || 0) + expandData;
+            // const expandData = typeof data['adhesion'] === 'number' ? data['adhesion'] : 0;
+            existingDoc.expand = (existingDoc.expand || 0) + (adhesion || 0);
             existingDoc.loopCount = (existingDoc.loopCount || 0) + loopCount;
 
             if(video_db) {
