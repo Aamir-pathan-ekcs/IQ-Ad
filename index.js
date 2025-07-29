@@ -16,10 +16,17 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 app.post('/track', async (req, res)=>{
     try{
         const data = req.body;
-
-        const trackerData = new tracker(data);
-        await trackerData.save();
-        res.status(201).send({ success: true, message: 'Data saved' });
+        const {advertiserID, orderID, lineItemID, creativeID, ...restFields} = data;
+        const existingDoc = await tracker.findOne({advertiserID, orderID, lineItemID, creativeID});
+        if(existingDoc) {
+            Object.assign(existingDoc, restFields);
+            await existingDoc.save();
+            res.status(200).send({success: true, message: 'Data Updated'});
+        }else {    
+            const trackerData = new tracker(data);
+            await trackerData.save();
+            res.status(201).send({ success: true, message: 'Data saved' });
+        }
     }catch(error) {
         console.log('Error data saving:',error);
         res.status(500).send({ success: false, message: 'Server Error'});
