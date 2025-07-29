@@ -16,9 +16,20 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 app.post('/track', async (req, res)=>{
     try{
         const data = req.body;
-        const {advertiserID, orderID, lineItemID, creativeID, ...restFields} = data;
+        const {advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, 
+               video_db, ...restFields} = data;
         const existingDoc = await tracker.findOne({advertiserID, orderID, lineItemID, creativeID});
         if(existingDoc) {
+            existingDoc.adhesion = (existingDoc.adhesion || 0) + adhesion;
+            existingDoc.loopCount = (existingDoc.loopCount || 0) + loopCount;
+
+            if(video_db) {
+                existingDoc.video_db.firstQuarter = (existingDoc.video_db.firstQuarter || 0) + (video_db.firstQuarter || 0);
+                existingDoc.video_db.secondQuarter = (existingDoc.video_db.secondQuarter || 0) + (video_db.secondQuarter || 0);
+                existingDoc.video_db.thirdQuarter = (existingDoc.video_db.thirdQuarter || 0) + (video_db.thirdQuarter || 0);
+                existingDoc.video_db.fourthQuarter = (existingDoc.video_db.fourthQuarter || 0) + (video_db.fourthQuarter || 0);
+            }
+
             Object.assign(existingDoc, restFields);
             await existingDoc.save();
             res.status(200).send({success: true, message: 'Data Updated'});
