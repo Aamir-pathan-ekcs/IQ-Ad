@@ -31,7 +31,7 @@ app.post('/track', async (req, res)=>{
                video_db, ...restFields} = data;
         const existingDoc = await tracker.findOne({advertiserID, orderID, lineItemID, creativeID});
         if(existingDoc) {
-            existingDoc.adhesion = (existingDoc.adhesion || 0) + adhesion;
+            existingDoc.expand = (existingDoc.expand || 0) + data['adhesion'];
             existingDoc.loopCount = (existingDoc.loopCount || 0) + loopCount;
 
             if(video_db) {
