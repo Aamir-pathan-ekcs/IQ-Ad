@@ -6,8 +6,7 @@ import cors from 'cors';
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.text({ type: 'application/json' }));
-app.use(express.raw({ type: 'application/json' }));
+
 
 const uri = 'mongodb+srv://aamirpathan:x6nxQMyFAkaArOJ7@cluster0.eyh3o9w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -16,18 +15,7 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 
 app.post('/track', async (req, res)=>{
     try{
-        let data;
-        
-        // Handle different content types
-        if (typeof req.body === 'string') {
-            data = JSON.parse(req.body);
-        } else if (Buffer.isBuffer(req.body)) {
-            data = JSON.parse(req.body.toString());
-        } else {
-            data = req.body;
-        }
-
-        console.log('Received data:', data); // Add this for debugging
+        const data = req.body;
 
         if(data.video_db) {
             const transformData = {
