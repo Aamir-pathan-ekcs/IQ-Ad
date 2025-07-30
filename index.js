@@ -27,9 +27,34 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 app.post('/track', async (req, res)=>{
     // let data;
     try{
-  let data = req.body; // bodyParser.json() will have already parsed it
+    let data;
+    // Check if req.body is already an object (parsed by bodyParser.json)
+    if (typeof req.body === 'object' && req.body !== null && !Buffer.isBuffer(req.body)) {
+        data = req.body;
+    } else if (Buffer.isBuffer(req.body)) {
+        // It's a buffer, try to parse it as JSON
+        try {
+            data = JSON.parse(req.body.toString('utf8'));
+            console.log("Parsed JSON from Buffer successfully!");
+        } catch (e) {
+            console.error("Failed to parse Buffer as JSON:", e);
+            return res.status(400).send({ success: false, message: 'Invalid JSON data in buffer' });
+        }
+    } else if (typeof req.body === 'string') {
+        // It's a string, try to parse it as JSON
+        try {
+            data = JSON.parse(req.body);
+            console.log("Parsed JSON from string successfully!");
+        } catch (e) {
+            console.error("Failed to parse string as JSON:", e);
+            return res.status(400).send({ success: false, message: 'Invalid JSON data in string' });
+        }
+    } else {
+        console.error("Unexpected req.body type:", typeof req.body, req.body);
+        return res.status(400).send({ success: false, message: 'Unexpected data format' });
+    }
 
-    console.log("Incoming tracking data:", data);
+    console.log("Incoming tracking data (after potential parsing):", data);
 
         if(data.video_db) {
             const transformData = {
