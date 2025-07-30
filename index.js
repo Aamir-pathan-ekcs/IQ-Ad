@@ -7,7 +7,10 @@ import bodyParser from 'body-parser';
 
 const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
-app.use(cors());
+app.use(cors({
+  origin: 'https://www.theinterestingtimes.co.uk',
+  credentials: true
+}));
 app.use(express.json());
 
 
