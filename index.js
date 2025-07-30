@@ -17,20 +17,25 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 .catch(err => console.error("Connection failed:", err));
 
 app.use((req, res, next) => {
-  if (
-    req.is('text/plain') &&
-    req.method === 'POST' &&
-    req.get('user-agent') &&
-    req.body &&
-    typeof req.body === 'string'
-  ) {
+  let data = '';
+
+  req.on('data', chunk => {
+    data += chunk;
+  });
+
+  req.on('end', () => {
     try {
-      req.body = JSON.parse(req.body);
-    } catch (e) {
-      console.error('Invalid JSON in plain-text POST body', e);
+      if (data) {
+        req.body = JSON.parse(data);
+      } else {
+        req.body = {};
+      }
+    } catch (err) {
+      console.error('❌ Failed to parse incoming JSON:', err.message);
+      req.body = {};
     }
-  }
-  next();
+    next();
+  });
 });
 
 app.post('/track', async (req, res)=>{
