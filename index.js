@@ -16,7 +16,9 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 app.post('/track', async (req, res)=>{
     try{
         const data = req.body;
-
+        console.log('testtttttttt aaaaaaaaa');
+        console.log('Beacon request received:', req.body);
+        console.log('ssssssssaaaa 222222');
         if(data.video_db) {
             const transformData = {
                 firstQuarter: typeof data.video_db["first-quarter"] === 'number' ? data.video_db["first-quarter"] : 0,
