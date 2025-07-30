@@ -11,43 +11,25 @@ app.use(cors({
   origin: 'https://www.theinterestingtimes.co.uk',
   credentials: true
 }));
-app.use(express.json());
+// app.use(express.json());
 
+app.use(bodyParser.json());
 
 const uri = 'mongodb+srv://aamirpathan:x6nxQMyFAkaArOJ7@cluster0.eyh3o9w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 .catch(err => console.error("Connection failed:", err));
 
-app.use(bodyParser.text({ type: '*/*' }));
+// app.use(bodyParser.text({ type: '*/*' }));
 
-app.use((req, res, next) => {
-  if (req.is('application/json')) {
-    try {
-      req.body = JSON.parse(req.body);
-    } catch (e) {
-      console.error('Invalid JSON body', e);
-    }
-  } else if (typeof req.body === 'string') {
-    // Try parse text/plain or other text bodies as JSON
-    try {
-      req.body = JSON.parse(req.body);
-    } catch (e) {
-      // leave as is if not JSON parseable
-    }
-  }
-  next();
-});
+
 
 app.post('/track', async (req, res)=>{
-    let data;
+    // let data;
     try{
-        if (typeof req.body === 'string') {
-            data = JSON.parse(req.body);
-        } else {
-            data = req.body;
-        }
-        console.log("Incoming tracking data:", data);
+  let data = req.body; // bodyParser.json() will have already parsed it
+
+    console.log("Incoming tracking data:", data);
 
         if(data.video_db) {
             const transformData = {
