@@ -7,9 +7,19 @@ import bodyParser from 'body-parser';
 
 const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
+const allowedOrigins = [
+    'https://www.theinterestingtimes.co.uk',
+    'https://dev.ekcs.co'
+];
+
 app.use(cors({
-  origin: 'https://www.theinterestingtimes.co.uk',
-  credentials: true
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
 }));
 app.use(express.json());
 
