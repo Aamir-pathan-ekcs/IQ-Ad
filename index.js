@@ -2,7 +2,9 @@ import mongoose from 'mongoose';
 import express from 'express';
 import tracker from './models/tracker.js';
 import cors from 'cors';
+import bodyParser from 'body-parser';
 
+app.use(bodyParser.raw({ type: 'application/json' }));
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -32,10 +34,14 @@ app.use((req, res, next) => {
 
 app.post('/track', async (req, res)=>{
     try{
-        const data = req.body;
-        console.log('testtttttttt aaaaaaaaa');
-        console.log('Beacon request received:', req.body);
-        console.log('ssssssssaaaa 222222');
+        
+        if (Buffer.isBuffer(req.body)) {
+            const rawBody = req.body.toString('utf8');
+            data = JSON.parse(rawBody);
+        } else {
+            data = req.body;
+        }
+
         if(data.video_db) {
             const transformData = {
                 firstQuarter: typeof data.video_db["first-quarter"] === 'number' ? data.video_db["first-quarter"] : 0,
