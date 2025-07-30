@@ -1,22 +1,19 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const trackerData = new mongoose.Schema({
-    loopCount: Number,
-    adhesion: Number,
+const trackerSchema = new mongoose.Schema({
     advertiserID: String,
     orderID: String,
     lineItemID: String,
-    creativeID:  String,
+    creativeID: String,
+    loopCount: Number,
+    adhesion: Number,
     video_db: {
-        firstQuarter: {type: Number, default: 0},
-        secondQuarter: {type: Number, default: 0},
-        thirdQuarter: {type: Number, default: 0},
-        fourthQuarter: {type: Number, default: 0}
+        firstQuarter: Number,
+        secondQuarter: Number,
+        thirdQuarter: Number,
+        fourthQuarter: Number
     },
-    clickTime: {
-        type: String,
-        default: () => new Date().toISOString().split('T')[0]
-    }
+    // other fields as needed
 });
 
-export default mongoose.model('IQ', trackerData);
+export default mongoose.model('tracker', trackerSchema);
