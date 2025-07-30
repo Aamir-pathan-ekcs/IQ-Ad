@@ -4,8 +4,9 @@ import tracker from './models/tracker.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
-app.use(bodyParser.raw({ type: 'application/json' }));
+
 const app = express();
+app.use(bodyParser.raw({ type: 'application/json' }));
 app.use(cors());
 app.use(express.json());
 
@@ -34,13 +35,23 @@ app.use((req, res, next) => {
 
 app.post('/track', async (req, res)=>{
     try{
-        
+
+        let data;
+
+        // If the body is raw (from sendBeacon), parse it
         if (Buffer.isBuffer(req.body)) {
-            const rawBody = req.body.toString('utf8');
+        const rawBody = req.body.toString('utf8');
+        try {
             data = JSON.parse(rawBody);
-        } else {
-            data = req.body;
+        } catch (err) {
+            console.error("Failed to parse raw body:", err);
+            return res.status(400).json({ success: false, message: "Invalid JSON" });
         }
+        } else {
+        data = req.body;
+        }
+
+        console.log("Incoming tracking data:", data);
 
         if(data.video_db) {
             const transformData = {
