@@ -19,46 +19,34 @@ const uri = 'mongodb+srv://aamirpathan:x6nxQMyFAkaArOJ7@cluster0.eyh3o9w.mongodb
 mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 .catch(err => console.error("Connection failed:", err));
 
+app.use(bodyParser.text({ type: '*/*' }));
+
 app.use((req, res, next) => {
-  let data = '';
-
-  req.on('data', chunk => {
-    data += chunk;
-  });
-
-  req.on('end', () => {
+  if (req.is('application/json')) {
     try {
-      if (data) {
-        req.body = JSON.parse(data);
-      } else {
-        req.body = {};
-      }
-    } catch (err) {
-      console.error('❌ Failed to parse incoming JSON:', err.message);
-      req.body = {};
+      req.body = JSON.parse(req.body);
+    } catch (e) {
+      console.error('Invalid JSON body', e);
     }
-    next();
-  });
+  } else if (typeof req.body === 'string') {
+    // Try parse text/plain or other text bodies as JSON
+    try {
+      req.body = JSON.parse(req.body);
+    } catch (e) {
+      // leave as is if not JSON parseable
+    }
+  }
+  next();
 });
 
 app.post('/track', async (req, res)=>{
+    let data;
     try{
-
-        let data;
-
-        // If the body is raw (from sendBeacon), parse it
-        if (Buffer.isBuffer(req.body)) {
-        const rawBody = req.body.toString('utf8');
-        try {
-            data = JSON.parse(rawBody);
-        } catch (err) {
-            console.error("Failed to parse raw body:", err);
-            return res.status(400).json({ success: false, message: "Invalid JSON" });
-        }
+        if (typeof req.body === 'string') {
+            data = JSON.parse(req.body);
         } else {
-        data = req.body;
+            data = req.body;
         }
-
         console.log("Incoming tracking data:", data);
 
         if(data.video_db) {
