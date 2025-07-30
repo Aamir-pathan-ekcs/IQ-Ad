@@ -7,7 +7,10 @@ import bodyParser from 'body-parser';
 
 const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
-app.use(cors());
+app.use(cors({
+  origin: 'https://www.theinterestingtimes.co.uk',
+  credentials: true
+}));
 app.use(express.json());
 
 
@@ -34,21 +37,24 @@ app.use((req, res, next) => {
 });
 
 app.post('/track', async (req, res)=>{
-
-console.log("Received request:", {
-        headers: req.headers,
-        body: req.body,
-        contentType: req.get('Content-Type')
-    });
+    try{
 
     let data;
-    try {
-        if (typeof req.body === 'string') {
-            data = JSON.parse(req.body);
-        } else {
-            data = req.body;
-        }
-        console.log("Parsed tracking data:", JSON.stringify(data, null, 2));
+
+    // If the body is raw (from sendBeacon), parse it
+    if (Buffer.isBuffer(req.body)) {
+      const rawBody = req.body.toString('utf8');
+      try {
+        data = JSON.parse(rawBody);
+      } catch (err) {
+        console.error("Failed to parse raw body:", err);
+        return res.status(400).json({ success: false, message: "Invalid JSON" });
+      }
+    } else {
+      data = req.body;
+    }
+
+    console.log("Incoming tracking data:", data);
 
         if(data.video_db) {
             const transformData = {
