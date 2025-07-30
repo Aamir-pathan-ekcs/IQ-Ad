@@ -51,7 +51,7 @@ app.post('/track', async (req, res)=>{
         const existingDoc = await tracker.findOne({advertiserID, orderID, lineItemID, creativeID});
         if(existingDoc) {
             existingDoc.adhesion = (existingDoc.adhesion || 0) + (adhesion || 0);
-            existingDoc.loopCount = (existingDoc.loopCount || 0) + loopCount;
+            existingDoc.loopCount = (existingDoc.loopCount || 0) + (loopCount || 0);
 
             if(video_db) {
                 existingDoc.video_db.firstQuarter = (existingDoc.video_db.firstQuarter || 0) + (video_db.firstQuarter || 0);
