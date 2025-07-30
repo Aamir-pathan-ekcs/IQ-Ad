@@ -15,6 +15,7 @@ mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 
 app.post('/track', async (req, res)=>{
     try{
+        console.log("Received data:", req.body);
         const data = req.body;
 
         if(data.video_db) {
