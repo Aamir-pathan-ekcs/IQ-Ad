@@ -7,54 +7,48 @@ import bodyParser from 'body-parser';
 
 const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
-app.use(cors({
-  origin: 'https://www.theinterestingtimes.co.uk',
-  credentials: true
-}));
-// app.use(express.json());
+app.use(cors());
+app.use(express.json());
 
-app.use(bodyParser.json());
 
 const uri = 'mongodb+srv://aamirpathan:x6nxQMyFAkaArOJ7@cluster0.eyh3o9w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 .catch(err => console.error("Connection failed:", err));
 
-// app.use(bodyParser.text({ type: '*/*' }));
-
-
+app.use((req, res, next) => {
+  if (
+    req.is('text/plain') &&
+    req.method === 'POST' &&
+    req.get('user-agent') &&
+    req.body &&
+    typeof req.body === 'string'
+  ) {
+    try {
+      req.body = JSON.parse(req.body);
+    } catch (e) {
+      console.error('Invalid JSON in plain-text POST body', e);
+    }
+  }
+  next();
+});
 
 app.post('/track', async (req, res)=>{
-    // let data;
-    try{
-    let data;
-    // Check if req.body is already an object (parsed by bodyParser.json)
-    if (typeof req.body === 'object' && req.body !== null && !Buffer.isBuffer(req.body)) {
-        data = req.body;
-    } else if (Buffer.isBuffer(req.body)) {
-        // It's a buffer, try to parse it as JSON
-        try {
-            data = JSON.parse(req.body.toString('utf8'));
-            console.log("Parsed JSON from Buffer successfully!");
-        } catch (e) {
-            console.error("Failed to parse Buffer as JSON:", e);
-            return res.status(400).send({ success: false, message: 'Invalid JSON data in buffer' });
-        }
-    } else if (typeof req.body === 'string') {
-        // It's a string, try to parse it as JSON
-        try {
-            data = JSON.parse(req.body);
-            console.log("Parsed JSON from string successfully!");
-        } catch (e) {
-            console.error("Failed to parse string as JSON:", e);
-            return res.status(400).send({ success: false, message: 'Invalid JSON data in string' });
-        }
-    } else {
-        console.error("Unexpected req.body type:", typeof req.body, req.body);
-        return res.status(400).send({ success: false, message: 'Unexpected data format' });
-    }
 
-    console.log("Incoming tracking data (after potential parsing):", data);
+console.log("Received request:", {
+        headers: req.headers,
+        body: req.body,
+        contentType: req.get('Content-Type')
+    });
+
+    let data;
+    try {
+        if (typeof req.body === 'string') {
+            data = JSON.parse(req.body);
+        } else {
+            data = req.body;
+        }
+        console.log("Parsed tracking data:", JSON.stringify(data, null, 2));
 
         if(data.video_db) {
             const transformData = {
