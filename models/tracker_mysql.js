@@ -1,4 +1,4 @@
-// models/tracker_mysql.js
+
 import { DataTypes } from 'sequelize';
 import sequelize from '../db.js';
 
