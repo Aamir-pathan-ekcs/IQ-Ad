@@ -1,7 +1,7 @@
 import express from 'express';
 import tracker from './models/tracker_mysql.js';
 import cors from 'cors';
-import sequelize from './models/db.js';
+import sequelize from './db.js';
 import bodyParser from 'body-parser';
 
 
