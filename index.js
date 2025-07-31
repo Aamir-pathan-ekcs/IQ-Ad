@@ -27,7 +27,7 @@ await sequelize.authenticate();
 console.log('Connected to MySQL');
 await sequelize.sync();
 
-// const uri = 'mongodb+srv://aamirpathan:x6nxQMyFAkaArOJ7@cluster0.eyh3o9w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+// const uri = 'mongodb+srv://khan:x6yFAOJ7@cluster0.eyh3o9w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 // mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
 // .catch(err => console.error("Connection failed:", err));
