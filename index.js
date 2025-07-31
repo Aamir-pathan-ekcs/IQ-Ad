@@ -7,7 +7,21 @@ import bodyParser from 'body-parser';
 
 const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
-app.use(cors({ origin: '*' }));
+const allowedOrigins = [
+  'https://www.theinterestingtimes.co.uk',
+  'https://dev.ekcs.co',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 
@@ -47,6 +61,7 @@ app.post('/track', async (req, res)=>{
     } else {
       data = req.body;
     }
+
 
         if(data.video_db) {
             const transformData = {
