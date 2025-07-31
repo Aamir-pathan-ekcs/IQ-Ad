@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
 import express from 'express';
 import tracker from './models/tracker_mysql.js';
 import cors from 'cors';
+import sequelize from './models/db.js';
 import bodyParser from 'body-parser';
 
 
@@ -79,7 +79,7 @@ app.post('/track', async (req, res) => {
 
     const { advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, ...rest } = data;
 
-    let trackerData = await Tracker.findOne({
+    let trackerData = await tracker.findOne({
       where: { advertiserID, orderID, lineItemID, creativeID }
     });
 
@@ -95,7 +95,7 @@ app.post('/track', async (req, res) => {
       await trackerData.save();
       res.status(200).send({ success: true, message: 'Data Updated' });
     } else {
-      await Tracker.create({ advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, ...data });
+      await tracker.create({ advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, ...data });
       res.status(201).send({ success: true, message: 'Data saved' });
     }
   } catch (error) {
