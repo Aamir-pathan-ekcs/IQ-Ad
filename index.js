@@ -20,7 +20,7 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, // <-- This is required
+  credentials: true,
 }));
 app.use(express.json());
 
@@ -49,10 +49,7 @@ app.use((req, res, next) => {
 
 app.post('/track', async (req, res)=>{
     try{
-
     let data;
-
-    // If the body is raw (from sendBeacon), parse it
     if (Buffer.isBuffer(req.body)) {
       const rawBody = req.body.toString('utf8');
       try {
@@ -65,7 +62,6 @@ app.post('/track', async (req, res)=>{
       data = req.body;
     }
 
-    console.log("Incoming tracking data:", data);
 
         if(data.video_db) {
             const transformData = {
