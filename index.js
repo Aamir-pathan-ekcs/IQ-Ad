@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import express from 'express';
-import tracker from './models/tracker.js';
+import tracker from './models/tracker_mysql.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
@@ -23,12 +23,14 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+await sequelize.authenticate();
+console.log('Connected to MySQL');
+await sequelize.sync(); // Create tables if not exist
 
+// const uri = 'mongodb+srv://aamirpathan:x6nxQMyFAkaArOJ7@cluster0.eyh3o9w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-const uri = 'mongodb+srv://aamirpathan:x6nxQMyFAkaArOJ7@cluster0.eyh3o9w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-
-mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
-.catch(err => console.error("Connection failed:", err));
+// mongoose.connect(uri).then(() => console.log("Connected to MongoDB Atlas"))
+// .catch(err => console.error("Connection failed:", err));
 
 app.use((req, res, next) => {
   if (
@@ -47,8 +49,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/track', async (req, res)=>{
-    try{
+app.post('/track', async (req, res) => {
+  try {
     let data;
     if (Buffer.isBuffer(req.body)) {
       const rawBody = req.body.toString('utf8');
@@ -62,44 +64,44 @@ app.post('/track', async (req, res)=>{
       data = req.body;
     }
 
-
-        if(data.video_db) {
-            const transformData = {
-                firstQuarter: typeof data.video_db["first-quarter"] === 'number' ? data.video_db["first-quarter"] : 0,
-                secondQuarter: typeof data.video_db["second-quarter"] === 'number' ? data.video_db["second-quarter"] : 0,
-                thirdQuarter: typeof data.video_db["third-quarter"] === 'number' ? data.video_db["third-quarter"] : 0,
-                fourthQuarter: typeof data.video_db["fourth-quarter"] === 'number' ? data.video_db["fourth-quarter"] : 0
-            }
-            data.video_db = transformData;
-        }
-
-        const {advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, 
-               video_db, ...restFields} = data;
-        const existingDoc = await tracker.findOne({advertiserID, orderID, lineItemID, creativeID});
-        if(existingDoc) {
-            existingDoc.adhesion = (existingDoc.adhesion || 0) + (adhesion || 0);
-            existingDoc.loopCount = (existingDoc.loopCount || 0) + (loopCount || 0);
-
-            if(video_db) {
-                existingDoc.video_db.firstQuarter = (existingDoc.video_db.firstQuarter || 0) + (video_db.firstQuarter || 0);
-                existingDoc.video_db.secondQuarter = (existingDoc.video_db.secondQuarter || 0) + (video_db.secondQuarter || 0);
-                existingDoc.video_db.thirdQuarter = (existingDoc.video_db.thirdQuarter || 0) + (video_db.thirdQuarter || 0);
-                existingDoc.video_db.fourthQuarter = (existingDoc.video_db.fourthQuarter || 0) + (video_db.fourthQuarter || 0);
-            }
-
-            Object.assign(existingDoc, restFields);
-            await existingDoc.save();
-            res.status(200).send({success: true, message: 'Data Updated'});
-        }else {    
-            const trackerData = new tracker(data);
-            await trackerData.save();
-            res.status(201).send({ success: true, message: 'Data saved' });
-        }
-    }catch(error) {
-        console.log('Error data saving:',error);
-        res.status(500).send({ success: false, message: 'Server Error'});
-
+    if (data.video_db) {
+      const transformData = {
+        firstQuarter: typeof data.video_db["first-quarter"] === 'number' ? data.video_db["first-quarter"] : 0,
+        secondQuarter: typeof data.video_db["second-quarter"] === 'number' ? data.video_db["second-quarter"] : 0,
+        thirdQuarter: typeof data.video_db["third-quarter"] === 'number' ? data.video_db["third-quarter"] : 0,
+        fourthQuarter: typeof data.video_db["fourth-quarter"] === 'number' ? data.video_db["fourth-quarter"] : 0
+      };
+      data.firstQuarter = transformData.firstQuarter;
+      data.secondQuarter = transformData.secondQuarter;
+      data.thirdQuarter = transformData.thirdQuarter;
+      data.fourthQuarter = transformData.fourthQuarter;
     }
+
+    const { advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, ...rest } = data;
+
+    let trackerData = await Tracker.findOne({
+      where: { advertiserID, orderID, lineItemID, creativeID }
+    });
+
+    if (trackerData) {
+      trackerData.adhesion += adhesion || 0;
+      trackerData.loopCount += loopCount || 0;
+
+      trackerData.firstQuarter += data.firstQuarter || 0;
+      trackerData.secondQuarter += data.secondQuarter || 0;
+      trackerData.thirdQuarter += data.thirdQuarter || 0;
+      trackerData.fourthQuarter += data.fourthQuarter || 0;
+
+      await trackerData.save();
+      res.status(200).send({ success: true, message: 'Data Updated' });
+    } else {
+      await Tracker.create({ advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, ...data });
+      res.status(201).send({ success: true, message: 'Data saved' });
+    }
+  } catch (error) {
+    console.log('Error saving data:', error);
+    res.status(500).send({ success: false, message: 'Server Error' });
+  }
 });
 
 app.listen(3000, () => console.log('Server running on http://localhost:3000'));
