@@ -1,8 +1,8 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize('admin_newsQuest_track', 'newsQuest_track', 'newsQuest_track@@321', {
-  host: 'dev.ekcs.co',
-  port: 8443,
+const sequelize = new Sequelize('tegnavideo_db', 'tegnavideo_usr', 'aExBjonoDcO!PUaQ', {
+  host: '134.209.151.179',
+  port: 3306,
   dialect: 'mysql',
   logging: false,
 });
