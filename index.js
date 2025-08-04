@@ -23,7 +23,8 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
-await sequelize.authenticate();
+await sequelize.authenticate().then(() => console.log('Connection successful!'))
+  .catch(err => console.error('Connection error:', err));
 console.log('Connected to MySQL');
 await sequelize.sync();
 
