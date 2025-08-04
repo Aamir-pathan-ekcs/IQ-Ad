@@ -7,7 +7,7 @@ const Tracker = sequelize.define('tracker', {
     type: DataTypes.INTEGER,
     defaultValue: 0
   },
-  adhesion: {
+  expand: {
     type: DataTypes.INTEGER,
     defaultValue: 0
   },

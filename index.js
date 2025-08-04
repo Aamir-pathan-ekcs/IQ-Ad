@@ -7,21 +7,23 @@ import bodyParser from 'body-parser';
 
 const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
-const allowedOrigins = [
-  'https://www.theinterestingtimes.co.uk',
-  'https://dev.ekcs.co',
-];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
+app.use(cors());
+// const allowedOrigins = [
+//   'https://www.theinterestingtimes.co.uk',
+//   'https://dev.ekcs.co',
+// ];
+
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true,
+// }));
 app.use(express.json());
 await sequelize.authenticate().then(() => console.log('Connection successful!'))
   .catch(err => console.error('Connection error:', err));
@@ -67,10 +69,10 @@ app.post('/track', async (req, res) => {
 
     if (data.video_db) {
       const transformData = {
-        firstQuarter: typeof data.video_db["first-quarter"] === 'number' ? data.video_db["first-quarter"] : 0,
-        secondQuarter: typeof data.video_db["second-quarter"] === 'number' ? data.video_db["second-quarter"] : 0,
-        thirdQuarter: typeof data.video_db["third-quarter"] === 'number' ? data.video_db["third-quarter"] : 0,
-        fourthQuarter: typeof data.video_db["fourth-quarter"] === 'number' ? data.video_db["fourth-quarter"] : 0
+        firstQuarter: typeof data.video_db.firstQuarter === 'number' ? data.video_db.firstQuarter : 0,
+        secondQuarter: typeof data.video_db.secondQuarter === 'number' ? data.video_db.secondQuarter : 0,
+        thirdQuarter: typeof data.video_db.thirdQuarter === 'number' ? data.video_db.thirdQuarter : 0,
+        fourthQuarter: typeof data.video_db.fourthQuarter === 'number' ? data.video_db.fourthQuarter : 0
       };
       data.firstQuarter = transformData.firstQuarter;
       data.secondQuarter = transformData.secondQuarter;
@@ -78,14 +80,14 @@ app.post('/track', async (req, res) => {
       data.fourthQuarter = transformData.fourthQuarter;
     }
 
-    const { advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, ...rest } = data;
+    const { advertiserID, orderID, lineItemID, creativeID, loopCount, expand, ...rest } = data;
 
     let trackerData = await tracker.findOne({
       where: { advertiserID, orderID, lineItemID, creativeID }
     });
 
     if (trackerData) {
-      trackerData.adhesion += adhesion || 0;
+      trackerData.expand += expand || 0;
       trackerData.loopCount += loopCount || 0;
 
       trackerData.firstQuarter += data.firstQuarter || 0;
@@ -96,7 +98,7 @@ app.post('/track', async (req, res) => {
       await trackerData.save();
       res.status(200).send({ success: true, message: 'Data Updated' });
     } else {
-      await tracker.create({ advertiserID, orderID, lineItemID, creativeID, loopCount, adhesion, ...data });
+      await tracker.create({ advertiserID, orderID, lineItemID, creativeID, loopCount: loopCount || 0, expand: expand || 0, ...data });
       res.status(201).send({ success: true, message: 'Data saved' });
     }
   } catch (error) {
@@ -105,4 +107,4 @@ app.post('/track', async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+app.listen(3000, () => console.log('Server running'));
