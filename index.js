@@ -66,6 +66,7 @@ app.post('/track', async (req, res) => {
     } else {
       data = req.body;
     }
+    console.log(data);
 
     if (data.video_db) {
       const transformData = {
