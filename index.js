@@ -82,10 +82,10 @@ app.post('/track', async (req, res) => {
     console.log(data);
     if (data.video_db) {
       const transformData = {
-        firstQuarter: typeof data.video_db.firstQuarter === 'number' ? data.video_db.firstQuarter : 0,
-        secondQuarter: typeof data.video_db.secondQuarter === 'number' ? data.video_db.secondQuarter : 0,
-        thirdQuarter: typeof data.video_db.thirdQuarter === 'number' ? data.video_db.thirdQuarter : 0,
-        fourthQuarter: typeof data.video_db.fourthQuarter === 'number' ? data.video_db.fourthQuarter : 0
+        firstQuarter: typeof data.video_db["first-quarter"] === 'number' ? data.video_db["first-quarter"] : 0,
+        secondQuarter: typeof data.video_db["second-quarter"] === 'number' ? data.video_db["second-quarter"] : 0,
+        thirdQuarter: typeof data.video_db["third-quarter"] === 'number' ? data.video_db["third-quarter"] : 0,
+        fourthQuarter: typeof data.video_db["fourth-quarter"] === 'number' ? data.video_db["fourth-quarter"] : 0
       };
       data.firstQuarter = transformData.firstQuarter;
       data.secondQuarter = transformData.secondQuarter;
