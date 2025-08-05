@@ -79,7 +79,6 @@ app.post('/track', async (req, res) => {
       data = req.body;
     }
 
-    console.log(data);
     if (data.video_db) {
       const transformData = {
         firstQuarter: typeof data.video_db["first-quarter"] === 'number' ? data.video_db["first-quarter"] : 0,
