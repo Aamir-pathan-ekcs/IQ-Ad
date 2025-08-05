@@ -8,7 +8,19 @@ import bodyParser from 'body-parser';
 const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
 
-app.use(cors());
+app.use(cors({
+  origin: true, // Allow all origins
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ],
+  optionsSuccessStatus: 200 // For legacy browser support
+}));
 // const allowedOrigins = [
 //   'https://www.theinterestingtimes.co.uk',
 //   'https://dev.ekcs.co',
