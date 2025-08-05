@@ -8,7 +8,7 @@ import bodyParser from 'body-parser';
 const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
 
-// app.use('/', cors());
+app.use(cors());
 // const allowedOrigins = [
 //   'https://www.theinterestingtimes.co.uk',
 //   'https://dev.ekcs.co',
@@ -24,26 +24,6 @@ app.use(bodyParser.raw({ type: 'application/json' }));
 //   },
 //   credentials: true,
 // }));
-app.use(cors({
-  origin: (origin, callback) => {
-    callback(null, true); // ✅ Reflect any origin
-  },
-  credentials: false       // ✅ No cookies/sessions allowed
-}));
-
-// Handle preflight (OPTIONS) requests
-app.options('*', cors({
-  origin: (origin, callback) => {
-    callback(null, true);
-  },
-  credentials: false
-}));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin || '*');
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
 app.use(express.json());
 await sequelize.authenticate().then(() => console.log('Connection successful!'))
   .catch(err => console.error('Connection error:', err));
