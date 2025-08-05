@@ -24,6 +24,10 @@ app.use(cors());
 //   },
 //   credentials: true,
 // }));
+app.use(cors({
+  origin: true,
+  credentials: false, 
+}));
 app.use(express.json());
 await sequelize.authenticate().then(() => console.log('Connection successful!'))
   .catch(err => console.error('Connection error:', err));
