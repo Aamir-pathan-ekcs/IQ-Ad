@@ -9,7 +9,7 @@ const app = express();
 app.use(bodyParser.raw({ type: 'application/json' }));
 
 app.use(cors({
-  origin: true, // Allow all origins
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
@@ -78,7 +78,7 @@ app.post('/track', async (req, res) => {
     } else {
       data = req.body;
     }
-    console.log(data);
+
 
     if (data.video_db) {
       const transformData = {
