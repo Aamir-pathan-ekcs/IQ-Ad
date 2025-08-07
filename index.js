@@ -92,7 +92,7 @@ app.post('/track', async (req, res) => {
       data.fourthQuarter = transformData.fourthQuarter;
     }
 
-    const { advertiserID, orderID, lineItemID, creativeID, loopCount, expand, ...rest } = data;
+    const { advertiserID, orderID, lineItemID, creativeID, fileName, loopCount, expand, ...rest } = data;
 
     let trackerData = await tracker.findOne({
       where: { advertiserID, orderID, lineItemID, creativeID }
@@ -101,7 +101,7 @@ app.post('/track', async (req, res) => {
     if (trackerData) {
       trackerData.expand += expand || 0;
       trackerData.loopCount += loopCount || 0;
-
+      trackerData.fileName = data.fileName;
       trackerData.firstQuarter += data.firstQuarter || 0;
       trackerData.secondQuarter += data.secondQuarter || 0;
       trackerData.thirdQuarter += data.thirdQuarter || 0;

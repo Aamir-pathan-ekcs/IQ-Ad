@@ -11,6 +11,7 @@ const Tracker = sequelize.define('tracker', {
     type: DataTypes.INTEGER,
     defaultValue: 0
   },
+  fileName: DataTypes.STRING,
   advertiserID: DataTypes.STRING,
   orderID: DataTypes.STRING,
   lineItemID: DataTypes.STRING,
